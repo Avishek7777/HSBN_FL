@@ -1,0 +1,70 @@
+# configs/base.yaml
+
+fl:
+  num_clients: 20
+  num_rounds: 100
+  client_fraction: 0.3
+  local_epochs: 5
+  lr: 0.001
+  head_loss_weight: 0.5
+  arch_dir: "architectures/"
+  seed: 42
+
+data:
+  root: "data/"
+  batch_size: 64
+  num_fine_classes: 100
+  num_coarse_classes: 20
+  dirichlet_alpha: 0.5
+
+architecture:
+  level0:
+    type: "cnn"
+    out_dim: 512 # d0 — highest dimensionality
+    num_channels: [64, 128, 256] # Progressive CNN channel sizes
+  # Level 1 — Local Pattern / Fine Concept (Small Transformer)
+  # Maps: R^d0 → R^d1
+  level1:
+    type: "transformer"
+    out_dim: 128 # d1 < d0
+    num_heads: 4
+    num_layers: 2
+    dropout: 0.1
+  # Level 2 — Abstract Concept (MLP)
+  # Maps: R^d1 → R^d2
+  level2:
+    type: "mlp"
+    out_dim: 32 # d2 < d1 — most compressed
+    hidden_dim: 64
+
+bandwidth:
+  channel_01:
+    beta: 64.0 # was 16.0 — 4x looser ceiling
+    gamma: 0.05 # was 1.0 — 20x softer penalty
+  # Channel between L1 → L2
+  channel_12:
+    beta: 16.0 # was 4.0 — 4x looser ceiling
+    gamma: 0.05
+
+feedback:
+  enabled: true
+  # alpha_k initialized at 0.1 — small initial top-down influence,
+  # grows during training as higher levels become meaningful.
+  alpha_init: 0.1
+
+loss:
+  lambda_0: 0.1 # Lower weight — reconstruction is auxiliary
+  # L1: fine-grained classification (CrossEntropy, 100 classes)
+  lambda_1: 1.0 # Primary task objective
+  # L2: coarse classification (CrossEntropy, 20 superclasses)
+  lambda_2: 0.5
+
+annealing:
+  enabled: true
+  strategy: "cosine"
+  warmup_epochs: 40
+  decay_lambda: 0.02
+
+training:
+  epochs: 100 # = num_rounds; annealing steps once per round, not per local epoch
+

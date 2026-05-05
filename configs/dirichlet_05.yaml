@@ -1,0 +1,7 @@
+defaults:
+  - base
+data:
+  dirichlet_alpha: 0.5
+
+experiment:
+  name: "hsbn_fl_alpha_05"
