@@ -1,7 +1,62 @@
-defaults:
-  - base
+# configs/dirichlet_05.yaml
+fl:
+  num_clients: 20
+  num_rounds: 100
+  client_fraction: 0.3
+  local_epochs: 5
+  lr: 0.001
+  head_loss_weight: 0.5
+  arch_dir: "architectures/"
+  seed: 42
+
 data:
+  root: "data/"
+  batch_size: 64
+  num_fine_classes: 100
+  num_coarse_classes: 20
   dirichlet_alpha: 0.5
 
 experiment:
-  name: "hsbn_fl_alpha_05"
+  name: "hsbn_fl_alpha05"
+
+architecture:
+  level0:
+    type: "cnn"
+    out_dim: 512
+    num_channels: [64, 128, 256]
+  level1:
+    type: "transformer"
+    out_dim: 128
+    num_heads: 4
+    num_layers: 2
+    dropout: 0.1
+  level2:
+    type: "mlp"
+    out_dim: 32
+    hidden_dim: 64
+
+bandwidth:
+  channel_01:
+    beta: 64.0
+    gamma: 0.05
+  channel_12:
+    beta: 16.0
+    gamma: 0.05
+
+feedback:
+  enabled: true
+  alpha_init: 0.1
+
+loss:
+  lambda_0: 0.1
+  lambda_1: 1.0
+  lambda_2: 0.5
+
+annealing:
+  enabled: true
+  strategy: "cosine"
+  warmup_epochs: 40
+  decay_lambda: 0.02
+
+training:
+  epochs: 100
