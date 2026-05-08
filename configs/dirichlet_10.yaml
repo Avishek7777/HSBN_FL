@@ -2,7 +2,7 @@
 fl:
   num_clients: 20
   num_rounds: 100
-  client_fraction: 0.3
+  client_fraction: 0.5
   local_epochs: 5
   lr: 0.001
   head_loss_weight: 0.5
@@ -59,4 +59,4 @@ annealing:
   decay_lambda: 0.02
 
 training:
-  epochs: 100
+  epochs: 200
