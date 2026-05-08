@@ -4,7 +4,7 @@ import yaml
 import json
 import os
 import torch
-from fl.runner import FLRunner
+from ../fl.runner import FLRunner
 
 
 CONFIG_FILES = [
